@@ -4,12 +4,30 @@ import { AssessmentPayload, OptionId } from '../types.ts';
 // Webhook endpoint for n8n integration
 export const WEBHOOK_URL = 'https://dnaworkia-n8n.vkfaze.easypanel.host/webhook/testecomportamental';
 
+const UTM_SOURCE_MAX_LENGTH = 100;
+
+/**
+ * Reads utm_source from the landing URL.
+ * Example: https://formulario.dnawork.ai/?utm_source=instagram
+ */
+export function readUtmSource(search: string): string | null {
+  const raw = new URLSearchParams(search).get('utm_source');
+  if (!raw) return null;
+
+  const value = raw.trim().replace(/[\u0000-\u001F\u007F]/g, '').slice(0, UTM_SOURCE_MAX_LENGTH);
+  return value || null;
+}
+
 /**
  * Builds the structured payload according to DNAWork n8n specification
  */
-export function buildAssessmentPayload(answersMap: Record<number, OptionId>): AssessmentPayload {
+export function buildAssessmentPayload(
+  answersMap: Record<number, OptionId>,
+  utmSource: string | null
+): AssessmentPayload {
   return {
     source: "DNAWork - Teste Comportamental",
+    utm_source: utmSource,
     submittedAt: new Date().toISOString(),
     answers: QUESTIONS.map((question) => {
       const selectedOptionId = answersMap[question.id];
@@ -30,8 +48,11 @@ export function buildAssessmentPayload(answersMap: Record<number, OptionId>): As
 /**
  * Submits the completed assessment to the n8n webhook
  */
-export async function submitAssessment(answersMap: Record<number, OptionId>): Promise<boolean> {
-  const payload = buildAssessmentPayload(answersMap);
+export async function submitAssessment(
+  answersMap: Record<number, OptionId>,
+  utmSource: string | null = readUtmSource(typeof window !== 'undefined' ? window.location.search : '')
+): Promise<boolean> {
+  const payload = buildAssessmentPayload(answersMap, utmSource);
 
   // Safe developer logging
   console.log('[DNAWork] Enviando avaliação para webhook:', WEBHOOK_URL);
