@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-dna-navy: #17194C;
+    --color-dna-navy-secondary: #25285F;
+    --color-dna-orange: #FF6500;
+    --color-dna-amber: #F5A21B;
+    --color-dna-bg: #F7F8FC;
+    --color-dna-text: #1E2433;
+    --color-dna-muted: #667085;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--color-dna-bg);
+    color: var(--color-dna-text);
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "Remix DNAWork - Avaliação Comportamental",
+  "description": "Formulário oficial de avaliação de perfil profissional e comportamental para candidatos da DNAWork.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

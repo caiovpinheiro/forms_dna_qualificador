@@ -1,0 +1,59 @@
+import { QUESTIONS } from '../data/questions.ts';
+import { AssessmentPayload, OptionId } from '../types.ts';
+
+// Webhook endpoint for n8n integration
+export const WEBHOOK_URL = 'https://dnaworkia-n8n.vkfaze.easypanel.host/webhook/testecomportamental';
+
+/**
+ * Builds the structured payload according to DNAWork n8n specification
+ */
+export function buildAssessmentPayload(answersMap: Record<number, OptionId>): AssessmentPayload {
+  return {
+    source: "DNAWork - Teste Comportamental",
+    submittedAt: new Date().toISOString(),
+    answers: QUESTIONS.map((question) => {
+      const selectedOptionId = answersMap[question.id];
+      const selectedOption = question.options.find(
+        (option) => option.id === selectedOptionId
+      );
+
+      return {
+        questionId: question.id,
+        question: question.question,
+        optionId: selectedOption?.id || null,
+        answer: selectedOption?.text || null
+      };
+    })
+  };
+}
+
+/**
+ * Submits the completed assessment to the n8n webhook
+ */
+export async function submitAssessment(answersMap: Record<number, OptionId>): Promise<boolean> {
+  const payload = buildAssessmentPayload(answersMap);
+
+  // Safe developer logging
+  console.log('[DNAWork] Enviando avaliação para webhook:', WEBHOOK_URL);
+  console.log('[DNAWork] Payload:', JSON.stringify(payload, null, 2));
+
+  try {
+    const response = await fetch(WEBHOOK_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro HTTP no envio da avaliação: ${response.status} ${response.statusText}`);
+    }
+
+    console.log('[DNAWork] Avaliação enviada com sucesso ao webhook!');
+    return true;
+  } catch (error) {
+    console.error('[DNAWork] Falha ao enviar avaliação para webhook:', error);
+    throw error;
+  }
+}
