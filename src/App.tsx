@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { QUESTIONS } from './data/questions.ts';
 import { OptionId } from './types.ts';
-import { submitAssessment } from './services/assessmentService.ts';
+import { readUtmSource, submitAssessment } from './services/assessmentService.ts';
 import { DnaWorkLogo } from './components/DnaWorkLogo.tsx';
 import { ProgressBar } from './components/ProgressBar.tsx';
 import { QuestionCard } from './components/QuestionCard.tsx';
@@ -14,6 +14,7 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [utmSource] = useState<string | null>(() => readUtmSource(window.location.search));
 
   const totalSteps = QUESTIONS.length;
   const currentQuestion = QUESTIONS[currentStep - 1];
@@ -44,7 +45,7 @@ export default function App() {
     setErrorMessage(null);
 
     try {
-      await submitAssessment(answers);
+      await submitAssessment(answers, utmSource);
       // ONLY advance to completed screen upon verified HTTP 2xx
       setIsCompleted(true);
     } catch (error) {

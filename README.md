@@ -4,6 +4,8 @@ Formulário de avaliação de perfil profissional e comportamental para candidat
 
 As respostas são enviadas para o webhook n8n configurado em `src/services/assessmentService.ts`.
 
+O link pode trazer a origem da campanha em `utm_source`. Exemplo: `https://formulario.dnawork.ai/?utm_source=instagram`. Esse valor entra no payload do webhook no campo `utm_source` quando a avaliação é concluída. Sem o parâmetro, o campo vai como `null`.
+
 ## Rodar localmente
 
 1. `npm install`

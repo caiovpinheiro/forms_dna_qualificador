@@ -20,6 +20,7 @@ export interface AnswerItem {
 
 export interface AssessmentPayload {
   source: string;
+  utm_source: string | null;
   submittedAt: string;
   answers: AnswerItem[];
 }
